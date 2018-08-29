@@ -1,5 +1,4 @@
-
-var maat = [
+maat:any[] = [
   {"ID":"1067","name":"China","population":"1359821466","percentage":"19,66%","position":"1"},
   {"ID":"1068","name":"India","population":"1205624727","percentage":"17,43%","position":"2"},
   {"ID":"1069","name":"United States of America","population":"312237216","percentage":"4,51%","position":"3"},
@@ -31,8 +30,3 @@ var maat = [
   {"ID":"1095","name":"Ukraine","population":"46044304","percentage":"0,67%","position":"29"},
   {"ID":"1096","name":"United Republic of Tanzania","population":"44973330","percentage":"0,65%","position":"30"}
 ];
-
-export default () =>
-  <div>
-    {maat.map(item => <div>{item.name}{" "}{item.population}</div>)}
-  </div>
