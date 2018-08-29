@@ -1,6 +1,3 @@
-import Link from 'next/link'
-
-var aika = new Date().toDateString()
 
 export default () =>
   <div>
