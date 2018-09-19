@@ -1,0 +1,8 @@
+#! dockerfile
+FROM mhart/alpine-node:8
+
+COPY . /opt/app
+
+WORKDIR /opt/app
+
+CMD ["yarn", "start"]
