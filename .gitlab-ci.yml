@@ -1,5 +1,9 @@
 variables:
+<<<<<<< HEAD
   REMOTE_HOST: deploy@172.16.7.241
+=======
+  REMOTE_HOST: deploy@172.16.XX.XX
+>>>>>>> 6c89fd5db74b5f15ae60f4a5db524bc30229d6d2
   REMOTE_DIR: react-webapp
 
 stages:
