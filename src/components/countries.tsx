@@ -1,8 +1,10 @@
 import React from 'react';
-
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 
 import CountryCard from './Country'
+
+
 
 const maat = [
   {"ID":"1067","name":"China","population":"1359821466","percentage":"19,66%","position":"1"},
@@ -37,22 +39,59 @@ const maat = [
   {"ID":"1096","name":"United Republic of Tanzania","population":"44973330","percentage":"0,65%","position":"30"}
 ]
 
-class Countries extends React.Component {
+var leftList = [];
 
+class Countries extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick() {
+    console.log('Click happened');
+  }
 
   render() {
     return (
-      <Paper>
+      <div>
+      <Grid container spacing={24}>
 
-       
-       {maat.map(function(maa){
-                    return  <CountryCard maa={maa}/>;
-                  })}
-      </Paper>
-
+        <Grid item xs={12} sm={6}>
+          <Paper >{leftList.map(function(maa){
+              return  <CountryCard onClick={this.handleClick} maa={maa}/>;
+            })}</Paper>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Paper >{maat.map(function(maa){
+              return  <CountryCard maa={maa}/>;
+            })}</Paper>
+        </Grid>
+      </Grid>
+    </div>
       
   );
   }
 }
 
 export default Countries;
+
+/*
+<Grid key={1} item xs={6} spacing={16}>
+<Paper>
+
+
+{maat.map(function(maa){
+              return  <CountryCard maa={maa}/>;
+            })}
+</Paper>
+</Grid>
+<Grid key={2} item xs={6} spacing={16}>
+<Paper>
+
+
+{maat.map(function(maa){
+              return  <CountryCard maa={maa}/>;
+            })}
+</Paper>
+</Grid>
+
+*/
