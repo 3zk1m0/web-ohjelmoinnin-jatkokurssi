@@ -42,7 +42,6 @@ const maat = [
   {"ID":"1096","name":"United Republic of Tanzania","population":"44973330","percentage":"0,65%","position":"30"}
 ]
 
-<<<<<<< HEAD
 
 class Countries extends React.Component {
   
@@ -95,37 +94,6 @@ class Countries extends React.Component {
         </Paper>
         </Grid>
         </Grid>
-=======
-var leftList = [];
-
-class Countries extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-  }
-  handleClick() {
-    console.log('Click happened');
-  }
-
-  render() {
-    return (
-      <div>
-      <Grid container spacing={24}>
-
-        <Grid item xs={12} sm={6}>
-          <Paper >{leftList.map(function(maa){
-              return  <CountryCard onClick={this.handleClick} maa={maa}/>;
-            })}</Paper>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Paper >{maat.map(function(maa){
-              return  <CountryCard maa={maa}/>;
-            })}</Paper>
-        </Grid>
-      </Grid>
-    </div>
-      
->>>>>>> 6723c93cf1deaa656b521a89a9b6fef742cd7a02
   );
   }
 }
