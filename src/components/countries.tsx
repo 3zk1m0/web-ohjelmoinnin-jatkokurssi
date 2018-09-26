@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Paper from '@material-ui/core/Paper';
-
+import Grid from '@material-ui/core/Grid';
 import CountryCard from './Country'
 
 const maat = [
@@ -37,20 +37,58 @@ const maat = [
   {"ID":"1096","name":"United Republic of Tanzania","population":"44973330","percentage":"0,65%","position":"30"}
 ]
 
-class Countries extends React.Component {
 
+class Countries extends React.Component {
+  
+  constructor(props) {
+    super(props);
+
+    this.state = {list:[]};
+
+    this.clickHandler = this.clickHandler.bind(this);
+    this.clickHandlerDelete = this.clickHandlerDelete.bind(this);
+
+    
+
+  }
+
+  clickHandler(position){
+
+    let index = this.state.list.findIndex( x => x.position == position)
+    if(index == -1){
+      var tmp = this.state.list;
+      tmp.push(maat[position-1]);
+      this.setState(tmp)
+    }
+  }
+
+  clickHandlerDelete(position){
+
+    var tmp = this.state.list;
+    let index = this.state.list.findIndex( x => x.position == position)
+    tmp.splice(index,1)
+    this.setState(tmp)
+
+  }
 
   render() {
     return (
-      <Paper>
-
-       
-       {maat.map(function(maa){
-                    return  <CountryCard maa={maa}/>;
-                  })}
-      </Paper>
-
-      
+      <Grid container spacing={24}>
+        <Grid item xs={4}>
+        <Paper>
+        {maat.map(function(maa) {
+                      return  <CountryCard key={maa.position}  maa={maa} onClick={this.clickHandler}/>;
+                    },this)}
+        </Paper>
+        </Grid>
+        <Grid item xs={4}>
+        <Paper>
+          {this.state.list.map(function(maa) {
+                          return  <CountryCard key={maa.position}  maa={maa} onClick={this.clickHandlerDelete}/>;
+                        },this)}
+        </Paper>
+        </Grid>
+        </Grid>
   );
   }
 }

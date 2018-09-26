@@ -3,8 +3,10 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import ButtonBase from '@material-ui/core/ButtonBase';
+
+import TouchRipple from 'material-ui/internal/TouchRipple';
 
 const styles = {
   card: {
@@ -19,11 +21,12 @@ const styles = {
   },
 };
 
-function countryCard(props) {
+function CountryCard(props) {
   const { classes } = props;
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} onClick={() => props.onClick(props.maa.position) }>
+
       <CardContent>
         <Typography className={classes.title} color="textSecondary">
           {props.maa.ID}
@@ -41,4 +44,5 @@ function countryCard(props) {
 }
 
 
-export default withStyles(styles)(countryCard);
+
+export default withStyles(styles)(CountryCard);
