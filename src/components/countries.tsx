@@ -1,10 +1,6 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-<<<<<<< HEAD
-=======
-
->>>>>>> 6723c93cf1deaa656b521a89a9b6fef742cd7a02
 import CountryCard from './Country'
 
 
@@ -99,25 +95,3 @@ class Countries extends React.Component {
 }
 
 export default Countries;
-
-/*
-<Grid key={1} item xs={6} spacing={16}>
-<Paper>
-
-
-{maat.map(function(maa){
-              return  <CountryCard maa={maa}/>;
-            })}
-</Paper>
-</Grid>
-<Grid key={2} item xs={6} spacing={16}>
-<Paper>
-
-
-{maat.map(function(maa){
-              return  <CountryCard maa={maa}/>;
-            })}
-</Paper>
-</Grid>
-
-*/
