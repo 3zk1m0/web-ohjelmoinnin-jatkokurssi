@@ -44,7 +44,7 @@ class Countries extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {list:[]};
+    this.state = {list:[], data:[]};
 
     this.clickHandler = this.clickHandler.bind(this);
     this.clickHandlerDelete = this.clickHandlerDelete.bind(this);
@@ -59,7 +59,7 @@ class Countries extends React.Component {
     if(index == -1){
       var tmp = this.state.list;
       tmp.push(maat[position-1]);
-      this.setState(tmp)
+      this.setState({list:tmp})
     }
   }
 
@@ -68,8 +68,14 @@ class Countries extends React.Component {
     var tmp = this.state.list;
     let index = this.state.list.findIndex( x => x.position == position)
     tmp.splice(index,1)
-    this.setState(tmp)
+    this.setState({list:tmp})
 
+  }
+
+  componentDidMount() {
+    fetch('https://restcountries.eu/rest/v2/all')
+      .then(response => response.json())
+      .then(data => this.setState({ data }));
   }
 
   render() {
@@ -77,7 +83,7 @@ class Countries extends React.Component {
       <Grid container spacing={24}>
         <Grid item xs={4}>
         <Paper>
-        {maat.map(function(maa) {
+        {this.state.data.map(function(maa) {
                       return  <CountryCard key={maa.position}  maa={maa} onClick={this.clickHandler}/>;
                     },this)}
         </Paper>
