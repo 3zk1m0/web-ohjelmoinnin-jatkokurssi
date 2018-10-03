@@ -22,22 +22,22 @@ const styles = {
 
 function CountryCard(props) {
   const { classes } = props;
-
+    //console.log(props.maa.numericCode)
   return (
-    <Card className={classes.card} onClick={() => props.onClick(props.maa.position) }>
+    <Card className={classes.card} onClick={() => props.onClick(props.maa.numericCode) }>
 
       <CardContent>
         <Typography className={classes.title} color="textSecondary">
-          {props.maa.ID}
+          {props.maa.numericCode}
         </Typography>
         <Typography variant="headline" component="h2">
           {props.maa.name}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Population: {props.maa.population}
+          Population: {props.maa.population}{"  "}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Percentage: {props.maa.percentage}
+          Area: {props.maa.area}
         </Typography>
       </CardContent>
     </Card>

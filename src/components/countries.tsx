@@ -44,7 +44,7 @@ class Countries extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {list:[], data:[]};
+    this.state = {list:[]};
 
     this.clickHandler = this.clickHandler.bind(this);
     this.clickHandlerDelete = this.clickHandlerDelete.bind(this);
@@ -53,13 +53,14 @@ class Countries extends React.Component {
 
   }
 
+
   clickHandler(position){
 
     let index = this.state.list.findIndex( x => x.position == position)
     if(index == -1){
       var tmp = this.state.list;
       tmp.push(maat[position-1]);
-      this.setState({list:tmp})
+      this.setState(tmp)
     }
   }
 
@@ -68,27 +69,21 @@ class Countries extends React.Component {
     var tmp = this.state.list;
     let index = this.state.list.findIndex( x => x.position == position)
     tmp.splice(index,1)
-    this.setState({list:tmp})
+    this.setState(tmp)
 
-  }
-
-  componentDidMount() {
-    fetch('https://restcountries.eu/rest/v2/all')
-      .then(response => response.json())
-      .then(data => this.setState({ data }));
   }
 
   render() {
     return (
-      <Grid container spacing={24}>
-        <Grid item xs={4}>
+      <Grid container spacing={8}>
+        <Grid item xs={6}>
         <Paper>
-        {this.state.data.map(function(maa) {
+        {maat.map(function(maa) {
                       return  <CountryCard key={maa.position}  maa={maa} onClick={this.clickHandler}/>;
                     },this)}
         </Paper>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
         <Paper>
           {this.state.list.map(function(maa) {
                           return  <CountryCard key={maa.position}  maa={maa} onClick={this.clickHandlerDelete}/>;

@@ -38,6 +38,9 @@ function ButtonAppBar(props) {
           <Link href="/countries">
             <Button color="inherit" >Countries</Button>
           </Link>
+          <Link href="/Clockpage">
+            <Button color="inherit" >Clock</Button>
+          </Link>
           
         </Toolbar>
       </AppBar>
