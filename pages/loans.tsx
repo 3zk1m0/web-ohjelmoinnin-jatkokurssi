@@ -1,7 +1,6 @@
 
 import React from 'react';
 
-
 import Appbar from "../src/components/Appbar"
 
 
