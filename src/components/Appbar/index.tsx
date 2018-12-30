@@ -19,8 +19,11 @@ import Link from 'next/link'
 
 import GroupIcon from '@material-ui/icons/Group';
 import DevicesIcon from '@material-ui/icons/DevicesOther';
+import HomeIcon from '@material-ui/icons/Home';
 
-const drawerWidth = 240;
+import LoginPaper from '../LoginPaper'
+
+const drawerWidth = 200;
 
 const styles = theme => ({
   root: {
@@ -50,15 +53,21 @@ const styles = theme => ({
   toolbar: theme.mixins.toolbar,
 });
 
+
 class AppMenu extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
         anchorEl: null,
-        loggedIn: false,
+        loggedId: '',
       };
+      this.handleClose = this.handleClose.bind(this)
   }
   
+  componentDidMount(){
+    this.setState({loggedId: localStorage.getItem('loggedUserId')})
+  }
+
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
@@ -67,21 +76,27 @@ class AppMenu extends React.Component {
     this.setState({ anchorEl: null });
   };
 
+  handleLogout = () => {
+    localStorage.setItem('loggedUserId', '');
+    this.setState({ anchorEl: null, loggedId: ''});
+  };
+
+  
+
   render(){
     const { classes } = this.props;
     const { anchorEl } = this.state;
 
-
     let menuList;
 
-    if (this.state.loggedIn){
+    if (this.state.loggedId != ''){
       menuList = <div>
         <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-        <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+        <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
       </div>
     } else {
       menuList = <div>
-        <MenuItem onClick={this.handleClose}>Login</MenuItem>
+        <LoginPaper onClick={this.handleClose}/>
       </div>
     }
 
@@ -118,6 +133,12 @@ class AppMenu extends React.Component {
         >
           <div className={classes.toolbar} />
           <List>
+            <Link href='/'>
+              <ListItem button key={'home'}>
+                  <HomeIcon/>
+                  <ListItemText primary={'Home'} />
+                </ListItem>
+            </Link>
             <Link href='/equipments'>
               <ListItem button key={'Equipment'}>
                   <DevicesIcon/>
@@ -125,7 +146,7 @@ class AppMenu extends React.Component {
                 </ListItem>
             </Link>
             <Link href='/users'>
-              <ListItem button key={'Users'}>
+              <ListItem button key={'Users'} >
                 <GroupIcon/>
                 <ListItemText primary={'Users'} />
               </ListItem>
@@ -138,7 +159,10 @@ class AppMenu extends React.Component {
             </Link>
           </List>
         </Drawer>
-
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          {this.props.content()}
+      </main>
 
         
       </div>
