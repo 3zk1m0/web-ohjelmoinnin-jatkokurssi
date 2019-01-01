@@ -21,16 +21,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { strict } from 'assert';
 
+import EditDialog from './EditDialog'
 
-
-
-
-
-let counter = 0;
-function createData(name, calories, fat, carbs, protein) {
-  counter += 1;
-  return { id: counter, name, calories, fat, carbs, protein };
-}
+import auth from '../../../const';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -57,9 +50,15 @@ function getSorting(order, orderBy) {
 }
 
 const rows = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
-  { id: 'role', numeric: false, disablePadding: true, label: 'Role' },
-  { id: 'email', numeric: false, disablePadding: true, label: 'Email' },
+  { id: 'device', numeric: false, disablePadding: true, label: 'Device' },
+  { id: 'customer', numeric: false, disablePadding: true, label: 'Customer' },
+  { id: 'dueDate', numeric: false, disablePadding: true, label: 'Duedate' },
+  { id: 'loantime', numeric: false, disablePadding: true, label: 'Loan Time' },
+  { id: 'returntime', numeric: false, disablePadding: true, label: 'Return Time' },
+  { id: 'loanState', numeric: false, disablePadding: true, label: 'Loaning State' },
+  { id: 'returnState', numeric: false, disablePadding: true, label: 'Return State' },
+  { id: 'loanGiver', numeric: false, disablePadding: true, label: 'Loan Giver' },
+  { id: 'loanReceiver', numeric: false, disablePadding: true, label: 'Loan Receiver' },
   { id: 'edit', numeric: false, disablePadding: true, label: 'Edit' },
   { id: 'delete', numeric: false, disablePadding: true, label: 'Delete' },
 ];
@@ -146,7 +145,7 @@ const toolbarStyles = theme => ({
   },
 });
 
-let UserTableToolbar = props => {
+let LoansTableToolbar = props => {
   const { numSelected, classes } = props;
 
   return (
@@ -186,12 +185,12 @@ let UserTableToolbar = props => {
   );
 };
 
-UserTableToolbar.propTypes = {
+LoansTableToolbar.propTypes = {
   classes: PropTypes.object.isRequired,
   numSelected: PropTypes.number.isRequired,
 };
 
-UserTableToolbar = withStyles(toolbarStyles)(UserTableToolbar);
+LoansTableToolbar = withStyles(toolbarStyles)(LoansTableToolbar);
 
 const styles = theme => ({
   root: {
@@ -216,10 +215,9 @@ class UserTable extends React.Component {
     page: 0,
     rowsPerPage: 10,
   };
-
+  
   componentWillMount = () => {
-    const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkZDI2ZWIzLTBiYjAtMTFlOS04YmIwLTAyNDJhYzEyMDAwMyIsImlhdCI6MTU0NjE3NzY5NiwiZXhwIjoxNTQ2MjY0MDk2fQ.hmHCzIFYXDHqXdwd0GKl3YcJcgbDZGEd-rUcM-4LnFM';
-    fetch('http://localhost:9000/api/v1/loansystem/users', { 
+    fetch('http://localhost:9000/api/v1/loansystem/loans', { 
       method: 'get', 
       headers: new Headers({
         'Authorization': auth, 
@@ -227,7 +225,10 @@ class UserTable extends React.Component {
       }),
     })
     .then(response => response.json())
-    .then(data => this.setState({ data }));
+    .then((data) => {
+      //console.log(data);
+      this.setState({data})
+    });
 
   }
 
@@ -279,6 +280,34 @@ class UserTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  handleEdit = (data) => {
+    console.log(data);
+    let oldData = this.state.data;
+    const index = oldData.findIndex((x) => {return x.id === data.id});
+    oldData[index] = data;
+    this.setState({oldData});
+  }
+
+  handleDelete = (id) => {
+    if (confirm("Are you sure to Delete") === true){
+      fetch('http://localhost:9000/api/v1/loansystem/loans/' + id, { 
+        method: 'delete', 
+        headers: new Headers({
+          'Authorization': auth, 
+          'Content-Type': 'application/json'
+        }),
+      })
+      //.then(response => console.log(response))
+      .then(response => {
+        let data = this.state.data;
+        const index = data.findIndex((x) => {return x.id === id});
+        data.splice(index, 1);
+        this.setState({data});
+      })
+
+    }
+  }
+
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
@@ -288,7 +317,7 @@ class UserTable extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <UserTableToolbar numSelected={selected.length} />
+        <LoansTableToolbar numSelected={selected.length} />
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <UserTableHead
@@ -307,7 +336,6 @@ class UserTable extends React.Component {
                   return (
                     <TableRow
                       hover
-                      
                       role="checkbox"
                       aria-checked={isSelected}
                       tabIndex={-1}
@@ -317,22 +345,22 @@ class UserTable extends React.Component {
                       <TableCell padding="checkbox">
                         <Checkbox checked={isSelected} onClick={event => this.handleClick(event, n.id)} />
                       </TableCell>
-                      <TableCell component="th" scope="row" padding="none">
-                        {n.name}
+                      <TableCell component="th" scope="row" padding="none">{n.device}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.customer}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.dueDate.split('T')[0]}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.loaningTime.slice(0, 19).replace('T', ' ')}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{typeof n.returnTime === "undefined" ? null : n.returnTime.slice(0, 19).replace('T', ' ')}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.loansState}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.returnState}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.loanGiver}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.loanReceiver}</TableCell>
+                      <TableCell padding="none">
+                      <EditDialog data= {n} handleEdit={this.handleEdit}/>
                       </TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.role}</TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.email}</TableCell>
                       <TableCell padding="none">{ 
                         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
                           aria-haspopup="true"
-                          onClick={() => {console.log('edit ' + n.name)}}>
-                            <EditIcon/>
-                        </IconButton>}
-                      </TableCell>
-                      <TableCell padding="none">{ 
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
-                          aria-haspopup="true"
-                          onClick={() => {console.log('delete ' + n.name)}}>
+                          onClick={() => {this.handleDelete(n.id);}}>
                             <DeleteIcon/>
                         </IconButton>}
                       </TableCell>

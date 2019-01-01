@@ -4,11 +4,14 @@ import React from 'react';
 
 import Appbar from "../src/components/Appbar"
 
+import EditDialog from "../src/components/Table/loans/EditDialog"
+
 import Typography from '@material-ui/core/Typography';
 
 
 const content = () => {
   return <div>
+    <EditDialog/>
     <Typography paragraph>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
       ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum

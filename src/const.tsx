@@ -1,0 +1,3 @@
+
+const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzY2E3ZTRiLTBjODktMTFlOS04YmIwLTAyNDJhYzEyMDAwMyIsImlhdCI6MTU0NjIxMjMxOSwiZXhwIjoxNTQ2Mjk4NzE5fQ.E4iJ-TzqicNswc-Wo6mDAhIeap-nDgPmvE4WDKa3Bm8';
+export default auth

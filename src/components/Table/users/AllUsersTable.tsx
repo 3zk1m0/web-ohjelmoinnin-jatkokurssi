@@ -22,6 +22,8 @@ import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { strict } from 'assert';
 
 
+import EditDialog from './EditDialog';
+import auth from '../../../const';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -48,9 +50,9 @@ function getSorting(order, orderBy) {
 }
 
 const rows = [
-  { id: 'device_name', numeric: false, disablePadding: true, label: 'Name' },
-  { id: 'device_info', numeric: false, disablePadding: true, label: 'Info' },
-  { id: 'loantime', numeric: false, disablePadding: true, label: 'Loantime' },
+  { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
+  { id: 'role', numeric: false, disablePadding: true, label: 'Role' },
+  { id: 'email', numeric: false, disablePadding: true, label: 'Email' },
   { id: 'edit', numeric: false, disablePadding: true, label: 'Edit' },
   { id: 'delete', numeric: false, disablePadding: true, label: 'Delete' },
 ];
@@ -209,8 +211,10 @@ class UserTable extends React.Component {
   };
 
   componentWillMount = () => {
-    const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkZDI2ZWIzLTBiYjAtMTFlOS04YmIwLTAyNDJhYzEyMDAwMyIsImlhdCI6MTU0NjE3NzY5NiwiZXhwIjoxNTQ2MjY0MDk2fQ.hmHCzIFYXDHqXdwd0GKl3YcJcgbDZGEd-rUcM-4LnFM';
-    fetch('http://localhost:9000/api/v1/loansystem/devices', { 
+    
+    
+
+    fetch('http://localhost:9000/api/v1/loansystem/users', { 
       method: 'get', 
       headers: new Headers({
         'Authorization': auth, 
@@ -219,7 +223,7 @@ class UserTable extends React.Component {
     })
     .then(response => response.json())
     .then(data => this.setState({ data }));
-
+    
   }
 
   handleRequestSort = (event, property) => {
@@ -270,6 +274,34 @@ class UserTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  handleDelete = (id) => {
+    if (confirm("Are you sure to Delete") === true){
+      fetch('http://localhost:9000/api/v1/loansystem/users/' + id, { 
+        method: 'delete', 
+        headers: new Headers({
+          'Authorization': auth, 
+          'Content-Type': 'application/json'
+        }),
+      })
+      //.then(response => console.log(response))
+      .then(response => {
+        let data = this.state.data;
+        const index = data.findIndex((x) => {return x.id === id});
+        data.splice(index, 1);
+        this.setState({data});
+      })
+
+    }
+  }
+
+  handleEdit = (data) => {
+    console.log(data);
+    let oldData = this.state.data;
+    const index = oldData.findIndex((x) => {return x.id === data.id});
+    oldData[index] = data;
+    this.setState({oldData});
+  }
+
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
@@ -308,20 +340,18 @@ class UserTable extends React.Component {
                       <TableCell padding="checkbox">
                         <Checkbox checked={isSelected} onClick={event => this.handleClick(event, n.id)} />
                       </TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.deviceName}</TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.deviceInfo}</TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.loantime}</TableCell>
-                      <TableCell padding="none">{ 
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
-                          aria-haspopup="true"
-                          onClick={() => {console.log('edit ' + n.name)}}>
-                            <EditIcon/>
-                        </IconButton>}
+                      <TableCell component="th" scope="row" padding="none">
+                        {n.name}
+                      </TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.role}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.email}</TableCell>
+                      <TableCell padding="none">
+                        <EditDialog data= {n} handleEdit={this.handleEdit}/>
                       </TableCell>
                       <TableCell padding="none">{ 
                         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
                           aria-haspopup="true"
-                          onClick={() => {console.log('delete ' + n.name)}}>
+                          onClick={() => {this.handleDelete(n.id)}}>
                             <DeleteIcon/>
                         </IconButton>}
                       </TableCell>
