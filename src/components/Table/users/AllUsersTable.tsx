@@ -16,12 +16,14 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import AddIcon from '@material-ui/icons/AddCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { strict } from 'assert';
 
-
+import AddDialog from './AddDialog'
+import EditDialog from './EditDialog';
+import auth from '../../../const';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -48,9 +50,9 @@ function getSorting(order, orderBy) {
 }
 
 const rows = [
-  { id: 'device_name', numeric: false, disablePadding: true, label: 'Name' },
-  { id: 'device_info', numeric: false, disablePadding: true, label: 'Info' },
-  { id: 'loantime', numeric: false, disablePadding: true, label: 'Loantime' },
+  { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
+  { id: 'role', numeric: false, disablePadding: true, label: 'Role' },
+  { id: 'email', numeric: false, disablePadding: true, label: 'Email' },
   { id: 'edit', numeric: false, disablePadding: true, label: 'Edit' },
   { id: 'delete', numeric: false, disablePadding: true, label: 'Delete' },
 ];
@@ -138,8 +140,7 @@ const toolbarStyles = theme => ({
 });
 
 let UserTableToolbar = props => {
-  const { numSelected, classes } = props;
-
+  const { numSelected, classes, addUser } = props;
   return (
     <Toolbar
       className={classNames(classes.root, {
@@ -153,7 +154,7 @@ let UserTableToolbar = props => {
           </Typography>
         ) : (
           <Typography variant="h6" id="tableTitle">
-            Nutrition
+            Users
           </Typography>
         )}
       </div>
@@ -161,16 +162,12 @@ let UserTableToolbar = props => {
       <div className={classes.actions}>
         {numSelected > 0 ? (
           <Tooltip title="Delete">
-            <IconButton aria-label="Delete">
+            <IconButton aria-label="Delete" onClick={() => {props.handleDeleteSelected()}}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
+          <AddDialog addUser={addUser}/>
         )}
       </div>
     </Toolbar>
@@ -180,6 +177,7 @@ let UserTableToolbar = props => {
 UserTableToolbar.propTypes = {
   classes: PropTypes.object.isRequired,
   numSelected: PropTypes.number.isRequired,
+  addUser: PropTypes.func,
 };
 
 UserTableToolbar = withStyles(toolbarStyles)(UserTableToolbar);
@@ -209,9 +207,8 @@ class UserTable extends React.Component {
   };
 
   componentWillMount = () => {
-    const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkZDI2ZWIzLTBiYjAtMTFlOS04YmIwLTAyNDJhYzEyMDAwMyIsImlhdCI6MTU0NjE3NzY5NiwiZXhwIjoxNTQ2MjY0MDk2fQ.hmHCzIFYXDHqXdwd0GKl3YcJcgbDZGEd-rUcM-4LnFM';
-    fetch('http://localhost:9000/api/v1/loansystem/devices', { 
-      method: 'get', 
+    fetch('http://localhost:9000/api/v1/loansystem/users', { 
+      method: 'GET', 
       headers: new Headers({
         'Authorization': auth, 
         'Content-Type': 'application/json'
@@ -219,7 +216,7 @@ class UserTable extends React.Component {
     })
     .then(response => response.json())
     .then(data => this.setState({ data }));
-
+    
   }
 
   handleRequestSort = (event, property) => {
@@ -270,6 +267,81 @@ class UserTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  handleDelete = (id) => {
+    if (confirm("Are you sure to Delete") === true){
+      fetch('http://localhost:9000/api/v1/loansystem/users/' + id, { 
+        method: 'DELETE', 
+        headers: new Headers({
+          'Authorization': auth, 
+          'Content-Type': 'application/json'
+        }),
+      })
+      //.then(response => console.log(response))
+      .then(response => {
+        if (response.status == 204){
+          let data = this.state.data;
+          const index = data.findIndex((x) => {return x.id === id});
+          data.splice(index, 1);
+          this.setState({data});
+        }
+      })
+
+    }
+  }
+
+  handleDeleteSelected = () => {
+    const { selected, data } = this.state;
+    if (selected.length === data.length) {
+      if (confirm("Are you sure to Delete All")) {
+        selected.forEach(element => {
+          fetch('http://localhost:9000/api/v1/loansystem/users/' + element, { 
+            method: 'DELETE', 
+            headers: new Headers({
+            'Authorization': auth, 
+            'Content-Type': 'application/json'
+            }),
+          })
+        });
+        const data = []
+        this.setState({data});
+      }
+    } else {
+      if (confirm("Are you sure to Delete selected")) {
+        selected.forEach(element => {
+          fetch('http://localhost:9000/api/v1/loansystem/users/' + element, { 
+            method: 'DELETE', 
+            headers: new Headers({
+            'Authorization': auth, 
+            'Content-Type': 'application/json'
+            }),
+          })
+          .then(response => {
+            if (response.status == 204){
+              let data = this.state.data;
+              const index = data.findIndex((x) => {return x.id === element});
+              data.splice(index, 1);
+              this.setState({data});
+            }
+          })
+        })
+      }
+    }
+  }
+
+  addUser = (data) => {
+    let oldData = this.state.data;
+    oldData.unshift(data);
+    this.setState({data:oldData});
+    console.log(data);
+  }
+
+  handleEdit = (data) => {
+    let oldData = this.state.data;
+    const index = oldData.findIndex((x) => {return x.id === data.id});
+    oldData[index] = data;
+    this.setState({data:oldData});
+  }
+
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
@@ -279,7 +351,7 @@ class UserTable extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <UserTableToolbar numSelected={selected.length} />
+        <UserTableToolbar numSelected={selected.length} addUser={this.addUser} handleDeleteSelected={this.handleDeleteSelected}/>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <UserTableHead
@@ -308,20 +380,18 @@ class UserTable extends React.Component {
                       <TableCell padding="checkbox">
                         <Checkbox checked={isSelected} onClick={event => this.handleClick(event, n.id)} />
                       </TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.deviceName}</TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.deviceInfo}</TableCell>
-                      <TableCell component="th" scope="row" padding="none">{n.loantime}</TableCell>
-                      <TableCell padding="none">{ 
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
-                          aria-haspopup="true"
-                          onClick={() => {console.log('edit ' + n.name)}}>
-                            <EditIcon/>
-                        </IconButton>}
+                      <TableCell component="th" scope="row" padding="none">
+                        {n.name}
+                      </TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.role}</TableCell>
+                      <TableCell component="th" scope="row" padding="none">{n.email}</TableCell>
+                      <TableCell padding="none">
+                        <EditDialog data= {n} handleEdit={this.handleEdit}/>
                       </TableCell>
                       <TableCell padding="none">{ 
                         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
                           aria-haspopup="true"
-                          onClick={() => {console.log('delete ' + n.name)}}>
+                          onClick={() => {this.handleDelete(n.id)}}>
                             <DeleteIcon/>
                         </IconButton>}
                       </TableCell>

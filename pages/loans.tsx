@@ -3,7 +3,7 @@ import React from 'react';
 
 import Appbar from "../src/components/Appbar"
 
-import Table from '../src/components/Table/AllLoansTable'
+import Table from '../src/components/Table/loans/AllLoansTable'
 
 
 const placeolder = () => {
