@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/AddCircleOutline';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import classNames from 'classnames';
 
@@ -35,12 +35,12 @@ const styles = theme => ({
   });
   
 
-class EditDialog extends React.Component {
+class AddDialog extends React.Component {
   state = {
     open: false,
-    deviceName: this.props.data.deviceName,
-    deviceInfo: this.props.data.deviceInfo,
-    loantime: this.props.data.loantime,
+    deviceName: '',
+    deviceInfo: '',
+    loantime: 0,
   };
 
 
@@ -52,25 +52,20 @@ class EditDialog extends React.Component {
   handleConfirm = () => {
     this.setState({ open: false });
     const data = {
-      id: this.props.data.id,
-      deviceName: this.state.deviceName,
-      deviceInfo: this.state.deviceInfo,
-      loantime: this.state.loantime,
-    }
-    this.props.handleEdit(data);
-
-    fetch('http://localhost:9000/api/v1/loansystem/devices/' + data.id, { 
-        method: 'PATCH', 
+        deviceName: this.state.deviceName,
+        deviceInfo: this.state.deviceInfo,
+        loantime: this.state.loantime,
+      }
+    //console.log(typeof data.loantime)
+    fetch('http://localhost:9000/api/v1/loansystem/devices', { 
+        method: 'POST', 
         headers: new Headers({
           'Authorization': auth, 
           'Content-Type': 'application/json'
         }),
-        body: `[
-          {"op": "replace", "path": "/deviceName", "value": "${data.deviceName}"},
-          {"op": "replace", "path": "/deviceInfo", "value": "${data.deviceInfo}"},
-          {"op": "replace", "path": "/loantime", "value": "${data.loantime}"}
-        ]`
-      })
+        body: JSON.stringify(data)
+      }).then(result => result.json()
+      ).then(data => this.props.addDevice(data))
   };
 
   handleClose = () => {
@@ -88,18 +83,15 @@ class EditDialog extends React.Component {
         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
                           aria-haspopup="true"
                           onClick={this.handleClickOpen}>
-                            <EditIcon/>
+                            <AddIcon/>
         </IconButton>
         <Dialog
           open={this.state.open}
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">EDIT</DialogTitle>
+          <DialogTitle id="form-dialog-title">ADD</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              id: {this.props.data.id}
-            </DialogContentText>
             <TextField
               margin="dense"
               id="deviceName"
@@ -144,4 +136,4 @@ class EditDialog extends React.Component {
   }
 }
 
-export default withStyles(styles)(EditDialog);
+export default withStyles(styles)(AddDialog);

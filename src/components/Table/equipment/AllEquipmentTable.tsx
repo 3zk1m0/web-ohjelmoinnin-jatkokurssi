@@ -21,6 +21,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { strict } from 'assert';
 
+import AddDialog from './AddDialog';
 import EditDialog from './EditDialog';
 
 import auth from '../../../const';
@@ -155,7 +156,7 @@ let UserTableToolbar = props => {
           </Typography>
         ) : (
           <Typography variant="h6" id="tableTitle">
-            Nutrition
+            Equipment
           </Typography>
         )}
       </div>
@@ -163,16 +164,12 @@ let UserTableToolbar = props => {
       <div className={classes.actions}>
         {numSelected > 0 ? (
           <Tooltip title="Delete">
-            <IconButton aria-label="Delete">
+            <IconButton aria-label="Delete" onClick={() => {props.handleDeleteSelected()}}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
+          <AddDialog addDevice={props.addDevice}/>
         )}
       </div>
     </Toolbar>
@@ -212,7 +209,7 @@ class UserTable extends React.Component {
 
   componentWillMount = () => {
     fetch('http://localhost:9000/api/v1/loansystem/devices', { 
-      method: 'get', 
+      method: 'GET', 
       headers: new Headers({
         'Authorization': auth, 
         'Content-Type': 'application/json'
@@ -272,17 +269,24 @@ class UserTable extends React.Component {
   };
 
   handleEdit = (data) => {
-    console.log(data);
+    // console.log(data);
     let oldData = this.state.data;
     const index = oldData.findIndex((x) => {return x.id === data.id});
     oldData[index] = data;
     this.setState({oldData});
   }
 
+  addDevice = (data) => {
+    let oldData = this.state.data;
+    oldData.unshift(data);
+    this.setState({data:oldData});
+    // console.log(data);
+  }
+
   handleDelete = (id) => {
     if (confirm("Are you sure to Delete") === true){
       fetch('http://localhost:9000/api/v1/loansystem/devices/' + id, { 
-        method: 'delete', 
+        method: 'DELETE', 
         headers: new Headers({
           'Authorization': auth, 
           'Content-Type': 'application/json'
@@ -290,12 +294,53 @@ class UserTable extends React.Component {
       })
       //.then(response => console.log(response))
       .then(response => {
-        let data = this.state.data;
-        const index = data.findIndex((x) => {return x.id === id});
-        data.splice(index, 1);
-        this.setState({data});
+        if (response.status == 204){
+          let data = this.state.data;
+          const index = data.findIndex((x) => {return x.id === id});
+          data.splice(index, 1);
+          this.setState({data});
+        }
       })
 
+    }
+  }
+
+  handleDeleteSelected = () => {
+    const { selected, data } = this.state;
+    if (selected.length === data.length) {
+      if (confirm("Are you sure to Delete All")) {
+        selected.forEach(element => {
+          fetch('http://localhost:9000/api/v1/loansystem/devices/' + element, { 
+            method: 'DELETE', 
+            headers: new Headers({
+            'Authorization': auth, 
+            'Content-Type': 'application/json'
+            }),
+          })
+        });
+        const data = []
+        this.setState({data});
+      }
+    } else {
+      if (confirm("Are you sure to Delete selected")) {
+        selected.forEach(element => {
+          fetch('http://localhost:9000/api/v1/loansystem/devices/' + element, { 
+            method: 'DELETE', 
+            headers: new Headers({
+            'Authorization': auth, 
+            'Content-Type': 'application/json'
+            }),
+          })
+          .then(response => {
+            if (response.status == 204){
+              let data = this.state.data;
+              const index = data.findIndex((x) => {return x.id === element});
+              data.splice(index, 1);
+              this.setState({data});
+            }
+          })
+        })
+      }
     }
   }
 
@@ -308,7 +353,7 @@ class UserTable extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <UserTableToolbar numSelected={selected.length} />
+        <UserTableToolbar numSelected={selected.length} addDevice={this.addDevice} handleDeleteSelected={this.handleDeleteSelected}/>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <UserTableHead

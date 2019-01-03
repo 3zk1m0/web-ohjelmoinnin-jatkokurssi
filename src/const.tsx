@@ -1,3 +1,6 @@
 
-const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzY2E3ZTRiLTBjODktMTFlOS04YmIwLTAyNDJhYzEyMDAwMyIsImlhdCI6MTU0NjIxMjMxOSwiZXhwIjoxNTQ2Mjk4NzE5fQ.E4iJ-TzqicNswc-Wo6mDAhIeap-nDgPmvE4WDKa3Bm8';
+
+
+
+const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE2ZTVmZDk3LTBkY2ItMTFlOS04YmIwLTAyNDJhYzEyMDAwMyIsImlhdCI6MTU0NjUyOTMwMywiZXhwIjoxNTQ2NjE1NzAzfQ.gpnVzEULV7QyYDCT22a7fJ00pOa9Jv_YqB-fl_iRaSg';
 export default auth

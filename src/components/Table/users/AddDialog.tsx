@@ -6,10 +6,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/AddCircleOutline';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import classNames from 'classnames';
 
@@ -33,14 +33,26 @@ const styles = theme => ({
       flexBasis: 200,
     },
   });
+
+  const roles = [
+    {
+      value: 'admin',
+      label: 'Admin',
+    },
+    {
+      value: 'user',
+      label: 'User',
+    },
+  ];
   
 
 class EditDialog extends React.Component {
   state = {
     open: false,
-    deviceName: this.props.data.deviceName,
-    deviceInfo: this.props.data.deviceInfo,
-    loantime: this.props.data.loantime,
+    name: '',
+    email: '',
+    role: 'user',
+    password: '',
   };
 
 
@@ -52,25 +64,22 @@ class EditDialog extends React.Component {
   handleConfirm = () => {
     this.setState({ open: false });
     const data = {
-      id: this.props.data.id,
-      deviceName: this.state.deviceName,
-      deviceInfo: this.state.deviceInfo,
-      loantime: this.state.loantime,
+      name: this.state.name,
+      email: this.state.email,
+      role: this.state.role,
+      password: this.state.password,
     }
-    this.props.handleEdit(data);
+    
 
-    fetch('http://localhost:9000/api/v1/loansystem/devices/' + data.id, { 
-        method: 'PATCH', 
+    fetch('http://localhost:9000/api/v1/loansystem/users', { 
+        method: 'POST', 
         headers: new Headers({
           'Authorization': auth, 
           'Content-Type': 'application/json'
         }),
-        body: `[
-          {"op": "replace", "path": "/deviceName", "value": "${data.deviceName}"},
-          {"op": "replace", "path": "/deviceInfo", "value": "${data.deviceInfo}"},
-          {"op": "replace", "path": "/loantime", "value": "${data.loantime}"}
-        ]`
-      })
+        body: JSON.stringify(data)
+      }).then(result => result.json()
+      ).then(data => this.props.addUser(data))
   };
 
   handleClose = () => {
@@ -85,50 +94,71 @@ class EditDialog extends React.Component {
     const { classes } = this.props;
     return (
       <div>
-        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
-                          aria-haspopup="true"
-                          onClick={this.handleClickOpen}>
-                            <EditIcon/>
-        </IconButton>
+        <Tooltip title="Add User">
+          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
+                            aria-haspopup="true"
+                            onClick={this.handleClickOpen}>
+                              <AddIcon/>
+          </IconButton>
+        </Tooltip>
         <Dialog
           open={this.state.open}
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">EDIT</DialogTitle>
+          <DialogTitle id="form-dialog-title">ADD</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              id: {this.props.data.id}
-            </DialogContentText>
             <TextField
               margin="dense"
-              id="deviceName"
+              id="name"
               label="Name"
-              value={this.state.deviceName}
-              onChange={this.handleChange('deviceName')}
+              value={this.state.name}
+              onChange={this.handleChange('name')}
               fullWidth
             />
             <TextField
               margin="dense"
-              id="deviceInfo"
-              label="Info"
-              value={this.state.deviceInfo}
-              onChange={this.handleChange('deviceInfo')}
+              id="email"
+              label="Email"
+              value={this.state.email}
+              onChange={this.handleChange('email')}
               fullWidth
             />
             <TextField
-              id="filled-number"
-              label="Number"
-              value={this.state.loantime}
-              onChange={this.handleChange('loantime')}
-              type="number"
+              margin="dense"
+              id="password"
+              label="Password"
+              value={this.state.password}
+              onChange={this.handleChange('password')}
+              fullWidth
+            />
+
+            <TextField
+              id="filled-select-currency-native"
+              select
+              label="Role"
               className={classes.textField}
+              value={this.state.role}
+              onChange={this.handleChange('role')}
+              SelectProps={{
+                native: true,
+                MenuProps: {
+                  className: classes.menu,
+                },
+              }}
+              helperText="Please select role"
+              margin="normal"
+              variant="filled"
               InputLabelProps={{
                 shrink: true,
               }}
-              margin="normal"
-              variant="filled"
-            />
+            >
+              {roles.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">

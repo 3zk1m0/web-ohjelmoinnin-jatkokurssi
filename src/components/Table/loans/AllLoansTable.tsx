@@ -21,6 +21,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { strict } from 'assert';
 
+import AddDialog from './AddDialog';
 import EditDialog from './EditDialog'
 
 import auth from '../../../const';
@@ -147,7 +148,6 @@ const toolbarStyles = theme => ({
 
 let LoansTableToolbar = props => {
   const { numSelected, classes } = props;
-
   return (
     <Toolbar
       className={classNames(classes.root, {
@@ -161,7 +161,7 @@ let LoansTableToolbar = props => {
           </Typography>
         ) : (
           <Typography variant="h6" id="tableTitle">
-            Nutrition
+            Loans
           </Typography>
         )}
       </div>
@@ -169,16 +169,12 @@ let LoansTableToolbar = props => {
       <div className={classes.actions}>
         {numSelected > 0 ? (
           <Tooltip title="Delete">
-            <IconButton aria-label="Delete">
+            <IconButton aria-label="Delete" onClick={() => {props.handleDeleteSelected()}}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
+          <AddDialog addLoan={props.addLoan} />
         )}
       </div>
     </Toolbar>
@@ -218,7 +214,7 @@ class UserTable extends React.Component {
   
   componentWillMount = () => {
     fetch('http://localhost:9000/api/v1/loansystem/loans', { 
-      method: 'get', 
+      method: 'GET', 
       headers: new Headers({
         'Authorization': auth, 
         'Content-Type': 'application/json'
@@ -280,8 +276,15 @@ class UserTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  addLoan = (data) => {
+    let oldData = this.state.data;
+    oldData.unshift(data);
+    this.setState({data:oldData});
+    //console.log(data);
+  }
+
   handleEdit = (data) => {
-    console.log(data);
+    //console.log(data);
     let oldData = this.state.data;
     const index = oldData.findIndex((x) => {return x.id === data.id});
     oldData[index] = data;
@@ -291,7 +294,7 @@ class UserTable extends React.Component {
   handleDelete = (id) => {
     if (confirm("Are you sure to Delete") === true){
       fetch('http://localhost:9000/api/v1/loansystem/loans/' + id, { 
-        method: 'delete', 
+        method: 'DELETE', 
         headers: new Headers({
           'Authorization': auth, 
           'Content-Type': 'application/json'
@@ -299,12 +302,53 @@ class UserTable extends React.Component {
       })
       //.then(response => console.log(response))
       .then(response => {
-        let data = this.state.data;
-        const index = data.findIndex((x) => {return x.id === id});
-        data.splice(index, 1);
-        this.setState({data});
+        if (response.status == 204){
+          let data = this.state.data;
+          const index = data.findIndex((x) => {return x.id === id});
+          data.splice(index, 1);
+          this.setState({data});
+        }
       })
 
+    }
+  }
+
+  handleDeleteSelected = () => {
+    const { selected, data } = this.state;
+    if (selected.length === data.length) {
+      if (confirm("Are you sure to Delete All")) {
+        selected.forEach(element => {
+          fetch('http://localhost:9000/api/v1/loansystem/loans/' + element, { 
+            method: 'DELETE', 
+            headers: new Headers({
+            'Authorization': auth, 
+            'Content-Type': 'application/json'
+            }),
+          })
+        });
+        const data = []
+        this.setState({data});
+      }
+    } else {
+      if (confirm("Are you sure to Delete selected")) {
+        selected.forEach(element => {
+          fetch('http://localhost:9000/api/v1/loansystem/loans/' + element, { 
+            method: 'DELETE', 
+            headers: new Headers({
+            'Authorization': auth, 
+            'Content-Type': 'application/json'
+            }),
+          })
+          .then(response => {
+            if (response.status == 204){
+              let data = this.state.data;
+              const index = data.findIndex((x) => {return x.id === element});
+              data.splice(index, 1);
+              this.setState({data});
+            }
+          })
+        })
+      }
     }
   }
 
@@ -317,7 +361,7 @@ class UserTable extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <LoansTableToolbar numSelected={selected.length} />
+        <LoansTableToolbar numSelected={selected.length} addLoan={this.addLoan} handleDeleteSelected={this.handleDeleteSelected}/>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <UserTableHead

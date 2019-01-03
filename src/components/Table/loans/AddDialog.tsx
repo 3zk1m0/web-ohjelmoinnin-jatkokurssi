@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/AddCircleOutline';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import classNames from 'classnames';
 
@@ -48,21 +48,6 @@ class EditDialog extends React.Component {
 
   handleClickOpen = () => {
 
-    fetch('http://localhost:9000/api/v1/loansystem/loans/' + this.props.data.id, { 
-        method: 'GET', 
-        headers: new Headers({
-          'Authorization': auth, 
-          'Content-Type': 'application/json'
-        })
-      })
-      .then(response => response.json())
-      .then(response => {
-        let data = response;
-        data.dueDate = data.dueDate.split('T')[0]
-        data.loaningTime = data.loaningTime.slice(0,-1)
-        data.returnTime = data.returnTime.slice(0,-1)
-        this.setState({data})
-      })
       fetch('http://localhost:9000/api/v1/loansystem/devices', { 
         method: 'GET', 
         headers: new Headers({
@@ -100,48 +85,28 @@ class EditDialog extends React.Component {
   handleConfirm = () => {
     this.setState({ open: false });
 
-    
-
-    let body = `[
-      {"op": "replace", "path": "/device_id", "value": "${this.state.data.device_id}"},
-      {"op": "replace", "path": "/customer_id", "value": "${this.state.data.customer_id}"},
-      {"op": "replace", "path": "/loanGiver_id", "value": "${this.state.data.loanGiver_id}"},
-      {"op": "replace", "path": "/loaningTime", "value": "${this.state.data.loaningTime}"},
-      {"op": "replace", "path": "/loansState", "value": "${this.state.data.loansState}"},
-      {"op": "replace", "path": "/dueDate", "value": "${this.state.data.dueDate}"}
-      `
-
-    if ( this.state.data.loanReceiver_id !== null 
-    && this.state.data.returnState !== null
-    && this.state.data.returnTime !== null){
-      body += `
-        ,{"op": "replace", "path": "/loanReceiver_id", "value": "${this.state.data.loanReceiver_id}"},
-        {"op": "replace", "path": "/returnState", "value": "${this.state.data.returnState}"},
-        {"op": "replace", "path": "/returnTime", "value": "${this.state.data.returnTime}"}
-        `
+    const data = {
+      loaningTime: this.state.data.loaningTime,
+      dueDate: this.state.data.dueDate,
+      returnTime: this.state.data.returnTime,
+      loansState: this.state.data.loansState,
+      returnState: this.state.data.returnState,
+      device_id: this.state.data.device_id,
+      customer_id: this.state.data.customer_id,
+      loanGiver_id: this.state.data.loanGiver_id,
+      loanReceiver_id: this.state.data.loanReceiver_id
     }
-    body += `]`
-    
-    fetch('http://localhost:9000/api/v1/loansystem/loans/' + this.state.data.id, { 
-        method: 'PATCH', 
-        headers: new Headers({
-          'Authorization': auth, 
-          'Content-Type': 'application/json'
-        }),
-        body: body
-      }).then( (result) => result.json())
-      .then( (result) => {
-        let data = result;
-        const users = this.state.users.concat(this.state.admins)
-
-        data.device = this.state.devices[this.state.devices.findIndex(x => x.value === result.device_id)].label
-        data.customer = users[users.findIndex(x => x.value === result.customer_id)].label
-        data.loanGiver = users[users.findIndex(x => x.value === result.loanGiver_id)].label
-        if (typeof data.loanReceiver_id !== 'undefined'){
-        data.loanReceiver = users[users.findIndex(x => x.value === result.loanReceiver_id)].label
-        }
-        this.props.handleEdit(data);
-      })
+    console.log(data);
+    fetch('http://localhost:9000/api/v1/loansystem/loans', { 
+      method: 'POST', 
+      headers: new Headers({
+        'Authorization': auth, 
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify(data)
+    })
+    .then(result => result.json())
+    .then(data => this.props.addLoan(data))
   };
 
   handleClose = () => {
@@ -168,7 +133,7 @@ class EditDialog extends React.Component {
         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
                           aria-haspopup="true"
                           onClick={this.handleClickOpen}>
-                            <EditIcon/>
+                            <AddIcon/>
         </IconButton>
         <Dialog
           open={this.state.open}
@@ -176,11 +141,7 @@ class EditDialog extends React.Component {
           aria-labelledby="form-dialog-title"
           scroll={this.state.scroll}
         >
-          <DialogTitle id="form-dialog-title">EDIT</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              id: {this.state.data.id}
-            </DialogContentText>
+          <DialogTitle id="form-dialog-title">ADD</DialogTitle>
             <TextField
               id="filled-select-device"
               select
@@ -345,7 +306,6 @@ class EditDialog extends React.Component {
                 </option>
               ))}
             </TextField>
-          </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">
               Cancel
