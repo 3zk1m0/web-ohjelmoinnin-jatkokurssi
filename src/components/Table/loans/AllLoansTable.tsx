@@ -22,7 +22,8 @@ import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { strict } from 'assert';
 
 import AddDialog from './AddDialog';
-import EditDialog from './EditDialog'
+import EditDialog from './EditDialog';
+import SearchBox from '../SearchBox';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -175,6 +176,7 @@ let LoansTableToolbar = props => {
           <AddDialog addLoan={props.addLoan} />
         )}
       </div>
+      <SearchBox handleSearch={props.handleSearch}/>
     </Toolbar>
   );
 };
@@ -204,8 +206,8 @@ class UserTable extends React.Component {
     order: 'asc',
     orderBy: 'calories',
     selected: [],
-    data: [
-    ],
+    data: [],
+    filteredData: [],
     page: 0,
     rowsPerPage: 10,
   };
@@ -221,9 +223,29 @@ class UserTable extends React.Component {
     .then(response => response.json())
     .then((data) => {
       //console.log(data);
-      this.setState({data})
+      this.setState({data, filteredData: data})
     });
 
+  }
+
+  handleSearch = searchText => {
+    const filteredData = this.state.data.filter(data => {
+      if(data.returnState == null){data.returnState = ''}
+      if(data.loanReceiver == null){data.loanReceiver = ''}
+      if (data.device.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || 
+      data.customer.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || 
+      data.loansState.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || 
+      data.returnState.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || 
+      data.loanGiver.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || 
+      data.loanReceiver.toLowerCase().indexOf(searchText.toLowerCase()) >= 0){
+        return true
+      } else {
+        return false
+      }
+      
+    })
+    this.setState({filteredData})
+    // console.log(filteredData)
   }
 
   handleRequestSort = (event, property) => {
@@ -354,12 +376,12 @@ class UserTable extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+    const { filteredData, order, orderBy, selected, rowsPerPage, page } = this.state;
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, filteredData.length - page * rowsPerPage);
 
     return (
       <Paper className={classes.root}>
-        <LoansTableToolbar numSelected={selected.length} addLoan={this.addLoan} handleDeleteSelected={this.handleDeleteSelected}/>
+        <LoansTableToolbar numSelected={selected.length} addLoan={this.addLoan} handleDeleteSelected={this.handleDeleteSelected} handleSearch={this.handleSearch}/>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <UserTableHead
@@ -368,10 +390,10 @@ class UserTable extends React.Component {
               orderBy={orderBy}
               onSelectAllClick={this.handleSelectAllClick}
               onRequestSort={this.handleRequestSort}
-              rowCount={data.length}
+              rowCount={filteredData.length}
             />
             <TableBody>
-              {stableSort(data, getSorting(order, orderBy))
+              {stableSort(filteredData, getSorting(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map(n => {
                   const isSelected = this.isSelected(n.id);
@@ -419,7 +441,7 @@ class UserTable extends React.Component {
         </div>
         <TablePagination
           component="div"
-          count={data.length}
+          count={filteredData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{
