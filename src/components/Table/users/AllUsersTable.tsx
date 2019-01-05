@@ -208,7 +208,7 @@ class UserTable extends React.Component {
   };
 
   componentWillMount = () => {
-    fetch('http://localhost:9000/api/v1/loansystem/users', { 
+    fetch('http://0.0.0.0:9000/api/v1/loansystem/users', { 
       method: 'GET', 
       headers: new Headers({
         'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -270,7 +270,7 @@ class UserTable extends React.Component {
 
   handleDelete = (id) => {
     if (confirm("Are you sure to Delete") === true){
-      fetch('http://localhost:9000/api/v1/loansystem/users/' + id, { 
+      fetch('http://0.0.0.0:9000/api/v1/loansystem/users/' + id, { 
         method: 'DELETE', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -310,7 +310,7 @@ class UserTable extends React.Component {
     if (selected.length === data.length) {
       if (confirm("Are you sure to Delete All")) {
         selected.forEach(element => {
-          fetch('http://localhost:9000/api/v1/loansystem/users/' + element, { 
+          fetch('http://0.0.0.0:9000/api/v1/loansystem/users/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
             'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -324,7 +324,7 @@ class UserTable extends React.Component {
     } else {
       if (confirm("Are you sure to Delete selected")) {
         selected.forEach(element => {
-          fetch('http://localhost:9000/api/v1/loansystem/users/' + element, { 
+          fetch('http://0.0.0.0:9000/api/v1/loansystem/users/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
             'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
