@@ -32,44 +32,40 @@ const styles = theme => ({
       flexBasis: 200,
     },
   });
-
-  const roles = [
-    {
-      value: 'admin',
-      label: 'Admin',
-    },
-    {
-      value: 'user',
-      label: 'User',
-    },
-  ];
   
 
 class EditDialog extends React.Component {
   state = {
-    open: false,
-    name: this.props.data.name,
-    email: this.props.data.email,
-    role: this.props.data.role,
+    name: '',
+    email: '',
+    password: '',
   };
 
+componentDidMount = () => {
+  fetch('http://localhost:9000/api/v1/loansystem/ownuser', { 
+    method: 'GET', 
+    headers: new Headers({
+      'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
+      'Content-Type': 'application/json'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data)
+    this.setState({name: data.name, email: data.email })
+  })
+}
 
-
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
 
   handleConfirm = () => {
     this.setState({ open: false });
     const data = {
-      id: this.props.data.id,
       name: this.state.name,
       email: this.state.email,
-      role: this.state.role,
+      password: this.state.password,
     }
-    this.props.handleEdit(data);
 
-    fetch('http://localhost:9000/api/v1/loansystem/users/' + data.id, { 
+    fetch('http://localhost:9000/api/v1/loansystem/ownuser', { 
         method: 'PATCH', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -77,8 +73,7 @@ class EditDialog extends React.Component {
         }),
         body: `[
           {"op": "replace", "path": "/name", "value": "${data.name}"},
-          {"op": "replace", "path": "/email", "value": "${data.email}"},
-          {"op": "replace", "path": "/role", "value": "${data.role}"}
+          {"op": "replace", "path": "/email", "value": "${data.email}"}
         ]`
       })
   };
@@ -95,21 +90,7 @@ class EditDialog extends React.Component {
     const { classes } = this.props;
     return (
       <div>
-        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
-                          aria-haspopup="true"
-                          onClick={this.handleClickOpen}>
-                            <EditIcon/>
-        </IconButton>
-        <Dialog
-          open={this.state.open}
-          onClose={this.handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle id="form-dialog-title">EDIT</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              id: {this.props.data.id}
-            </DialogContentText>
+        
             <TextField
               margin="dense"
               id="name"
@@ -127,38 +108,18 @@ class EditDialog extends React.Component {
               fullWidth
             />
             <TextField
-              id="filled-select-currency-native"
-              select
-              label="Role"
-              className={classes.textField}
-              value={this.state.role}
-              onChange={this.handleChange('role')}
-              SelectProps={{
-                native: true,
-                MenuProps: {
-                  className: classes.menu,
-                },
-              }}
-              helperText="Please select role"
-              margin="normal"
-              variant="filled"
-            >
-              {roles.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </TextField>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Cancel
-            </Button>
+              margin="dense"
+              id="passowrd"
+              label="New Password"
+              type='password'
+              value={this.state.password}
+              onChange={this.handleChange('password')}
+              fullWidth
+            />
+            
             <Button onClick={this.handleConfirm} color="primary">
-              Confirm
+              Save
             </Button>
-          </DialogActions>
-        </Dialog>
       </div>
     );
   }

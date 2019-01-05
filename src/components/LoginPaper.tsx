@@ -22,7 +22,7 @@ class AlertDialogSlide extends React.Component {
             open: false,
             email: '',
             password: '',
-            incorrect: false
+            incorrect: false,
         };
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -49,18 +49,37 @@ class AlertDialogSlide extends React.Component {
 
   handleLogin = () => {
     console.log(this.state)
-    
-    for (let userObject of users) {
-      if(userObject.email == this.state.email && userObject.password == this.state.password){
-        console.log("Logged in")
-        window.localStorage.setItem('loggedUserId', userObject.id);
-        this.setState({ open: false });
-      } else{
-          console.log("Incorrect");
-          this.setState({incorrect: true})
+    const body = { 
+      email: this.state.email,
+      password: this.state.password
+    }
+
+    fetch('http://localhost:9000/api/v1/login', { 
+      method: 'POST', 
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .then(data => {
+      //console.log(data)
+      if (data.message === 'Successfully logged in!') {
+        window.localStorage.setItem('token', data.token);
+        window.localStorage.setItem('loggedRole', data.role);
+        window.localStorage.setItem('name', data.name);
+        const incorrect = false;
+        const open = false;
+        this.props.changeRole(data.role, data.token)
+        this.setState({incorrect, open})
+        this.props.onClick();
+      } else {
+        const incorrect = true
+        this.setState({incorrect})
       }
-          
-      }
+    });
+
+
 
     
     
@@ -89,7 +108,7 @@ class AlertDialogSlide extends React.Component {
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle id="alert-dialog-slide-title">
-            {"Login"}
+            Login
           </DialogTitle>
           <DialogContent>
             {incorrect}

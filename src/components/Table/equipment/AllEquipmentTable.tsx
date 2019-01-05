@@ -24,7 +24,6 @@ import { strict } from 'assert';
 import AddDialog from './AddDialog';
 import EditDialog from './EditDialog';
 
-import auth from '../../../const';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -54,8 +53,8 @@ const rows = [
   { id: 'device_name', numeric: false, disablePadding: true, label: 'Name' },
   { id: 'device_info', numeric: false, disablePadding: true, label: 'Info' },
   { id: 'loantime', numeric: false, disablePadding: true, label: 'Loantime' },
-  { id: 'edit', numeric: false, disablePadding: true, label: 'Edit' },
-  { id: 'delete', numeric: false, disablePadding: true, label: 'Delete' },
+  { id: 'edit', numeric: false, disablePadding: true, label: window.localStorage.getItem('loggedRole') === 'admin' ? ('Edit') : ('') },
+  { id: 'delete', numeric: false, disablePadding: true, label: window.localStorage.getItem('loggedRole') === 'admin' ? ('Delete') : ('') },
 ];
 
 class UserTableHead extends React.Component {
@@ -65,7 +64,8 @@ class UserTableHead extends React.Component {
 
   render() {
     const { onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;
-
+    console.log(window.localStorage.getItem('loggedRole'))
+    console.log(window.localStorage.getItem('loggedRole') === 'admin');
     return (
       <TableHead>
         <TableRow>
@@ -162,7 +162,7 @@ let UserTableToolbar = props => {
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
-        {numSelected > 0 ? (
+          {window.localStorage.getItem('loggedRole') === 'admin' ? (numSelected > 0 ? (
           <Tooltip title="Delete">
             <IconButton aria-label="Delete" onClick={() => {props.handleDeleteSelected()}}>
               <DeleteIcon />
@@ -170,7 +170,9 @@ let UserTableToolbar = props => {
           </Tooltip>
         ) : (
           <AddDialog addDevice={props.addDevice}/>
-        )}
+        )) : ('')}
+        
+
       </div>
     </Toolbar>
   );
@@ -211,7 +213,7 @@ class UserTable extends React.Component {
     fetch('http://localhost:9000/api/v1/loansystem/devices', { 
       method: 'GET', 
       headers: new Headers({
-        'Authorization': auth, 
+        'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
         'Content-Type': 'application/json'
       }),
     })
@@ -288,7 +290,7 @@ class UserTable extends React.Component {
       fetch('http://localhost:9000/api/v1/loansystem/devices/' + id, { 
         method: 'DELETE', 
         headers: new Headers({
-          'Authorization': auth, 
+          'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
           'Content-Type': 'application/json'
         }),
       })
@@ -313,7 +315,7 @@ class UserTable extends React.Component {
           fetch('http://localhost:9000/api/v1/loansystem/devices/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
-            'Authorization': auth, 
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
             'Content-Type': 'application/json'
             }),
           })
@@ -327,7 +329,7 @@ class UserTable extends React.Component {
           fetch('http://localhost:9000/api/v1/loansystem/devices/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
-            'Authorization': auth, 
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
             'Content-Type': 'application/json'
             }),
           })
@@ -386,14 +388,15 @@ class UserTable extends React.Component {
                       <TableCell component="th" scope="row" padding="none">{n.deviceInfo}</TableCell>
                       <TableCell component="th" scope="row" padding="none">{n.loantime}</TableCell>
                       <TableCell padding="none">
-                        <EditDialog data= {n} handleEdit={this.handleEdit}/>
+                        {window.localStorage.getItem('loggedRole') === 'admin' ? (<EditDialog data= {n} handleEdit={this.handleEdit}/>) : ('')}
                       </TableCell>
-                      <TableCell padding="none">{ 
-                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
+                      <TableCell padding="none">
+                      {window.localStorage.getItem('loggedRole') === 'admin' ? (<IconButton className={classes.menuButton} color="inherit" aria-label="Menu"
                           aria-haspopup="true"
                           onClick={() => {this.handleDelete(n.id)}}>
                             <DeleteIcon/>
-                        </IconButton>}
+                        </IconButton>) : ('')} 
+                        
                       </TableCell>
                     </TableRow>
                   );
