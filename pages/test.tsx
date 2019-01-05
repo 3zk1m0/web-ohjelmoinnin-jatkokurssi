@@ -8,10 +8,10 @@ import EditDialog from "../src/components/Table/loans/EditDialog"
 
 import Typography from '@material-ui/core/Typography';
 
-
+import SearchBox from '../src/components/Table/SearchBox'
 
 export default () =>
   <div>
-    <EditDialog/>
+    <SearchBox/>
 
   </div>

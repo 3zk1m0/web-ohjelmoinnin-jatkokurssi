@@ -23,7 +23,7 @@ import { strict } from 'assert';
 
 import AddDialog from './AddDialog';
 import EditDialog from './EditDialog';
-
+import SearchBox from '../SearchBox';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -142,7 +142,7 @@ const toolbarStyles = theme => ({
 
 let UserTableToolbar = props => {
   const { numSelected, classes } = props;
-
+  console.log(this.props);
   return (
     <Toolbar
       className={classNames(classes.root, {
@@ -160,6 +160,7 @@ let UserTableToolbar = props => {
           </Typography>
         )}
       </div>
+      
       <div className={classes.spacer} />
       <div className={classes.actions}>
           {window.localStorage.getItem('loggedRole') === 'admin' ? (numSelected > 0 ? (
@@ -174,6 +175,7 @@ let UserTableToolbar = props => {
         
 
       </div>
+      <SearchBox handleSearch={props.handleSearch}/>
     </Toolbar>
   );
 };
@@ -203,8 +205,8 @@ class UserTable extends React.Component {
     order: 'asc',
     orderBy: 'calories',
     selected: [],
-    data: [
-    ],
+    data: [],
+    filteredData: [],
     page: 0,
     rowsPerPage: 10,
   };
@@ -218,8 +220,21 @@ class UserTable extends React.Component {
       }),
     })
     .then(response => response.json())
-    .then(data => this.setState({ data }));
+    .then(data => this.setState({ data, filteredData: data }));
 
+  }
+
+  handleSearch = searchText => {
+    const filteredData = this.state.data.filter(data => {
+      if (data.deviceName.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || data.deviceInfo.toLowerCase().indexOf(searchText.toLowerCase()) >= 0){
+        return true
+      } else {
+        return false
+      }
+      
+    })
+    this.setState({filteredData})
+    // console.log(filteredData)
   }
 
   handleRequestSort = (event, property) => {
@@ -350,12 +365,12 @@ class UserTable extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+    const { filteredData, order, orderBy, selected, rowsPerPage, page } = this.state;
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, filteredData.length - page * rowsPerPage);
 
     return (
       <Paper className={classes.root}>
-        <UserTableToolbar numSelected={selected.length} addDevice={this.addDevice} handleDeleteSelected={this.handleDeleteSelected}/>
+        <UserTableToolbar numSelected={selected.length} addDevice={this.addDevice} handleDeleteSelected={this.handleDeleteSelected} handleSearch={this.handleSearch}/>
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <UserTableHead
@@ -364,10 +379,10 @@ class UserTable extends React.Component {
               orderBy={orderBy}
               onSelectAllClick={this.handleSelectAllClick}
               onRequestSort={this.handleRequestSort}
-              rowCount={data.length}
+              rowCount={filteredData.length}
             />
             <TableBody>
-              {stableSort(data, getSorting(order, orderBy))
+              {stableSort(filteredData, getSorting(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map(n => {
                   const isSelected = this.isSelected(n.id);
@@ -411,7 +426,7 @@ class UserTable extends React.Component {
         </div>
         <TablePagination
           component="div"
-          count={data.length}
+          count={filteredData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{
