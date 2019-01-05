@@ -13,7 +13,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import classNames from 'classnames';
 
-import auth from '../../../const';
 
 const styles = theme => ({
     root: {
@@ -51,7 +50,7 @@ class EditDialog extends React.Component {
     fetch('http://localhost:9000/api/v1/loansystem/loans/' + this.props.data.id, { 
         method: 'GET', 
         headers: new Headers({
-          'Authorization': auth, 
+          'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
           'Content-Type': 'application/json'
         })
       })
@@ -66,7 +65,7 @@ class EditDialog extends React.Component {
       fetch('http://localhost:9000/api/v1/loansystem/devices', { 
         method: 'GET', 
         headers: new Headers({
-          'Authorization': auth, 
+          'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
           'Content-Type': 'application/json'
         })
       })
@@ -80,7 +79,7 @@ class EditDialog extends React.Component {
     fetch('http://localhost:9000/api/v1/loansystem/users', { 
       method: 'GET', 
       headers: new Headers({
-        'Authorization': auth, 
+        'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
         'Content-Type': 'application/json'
       })
     })
@@ -125,7 +124,7 @@ class EditDialog extends React.Component {
     fetch('http://localhost:9000/api/v1/loansystem/loans/' + this.state.data.id, { 
         method: 'PATCH', 
         headers: new Headers({
-          'Authorization': auth, 
+          'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
           'Content-Type': 'application/json'
         }),
         body: body

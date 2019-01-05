@@ -23,7 +23,6 @@ import { strict } from 'assert';
 
 import AddDialog from './AddDialog'
 import EditDialog from './EditDialog';
-import auth from '../../../const';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -210,7 +209,7 @@ class UserTable extends React.Component {
     fetch('http://localhost:9000/api/v1/loansystem/users', { 
       method: 'GET', 
       headers: new Headers({
-        'Authorization': auth, 
+        'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
         'Content-Type': 'application/json'
       }),
     })
@@ -272,7 +271,7 @@ class UserTable extends React.Component {
       fetch('http://localhost:9000/api/v1/loansystem/users/' + id, { 
         method: 'DELETE', 
         headers: new Headers({
-          'Authorization': auth, 
+          'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
           'Content-Type': 'application/json'
         }),
       })
@@ -297,7 +296,7 @@ class UserTable extends React.Component {
           fetch('http://localhost:9000/api/v1/loansystem/users/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
-            'Authorization': auth, 
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
             'Content-Type': 'application/json'
             }),
           })
@@ -311,7 +310,7 @@ class UserTable extends React.Component {
           fetch('http://localhost:9000/api/v1/loansystem/users/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
-            'Authorization': auth, 
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
             'Content-Type': 'application/json'
             }),
           })

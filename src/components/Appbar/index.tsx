@@ -16,12 +16,14 @@ import Menu from '@material-ui/core/Menu';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import Link from 'next/link'
+import jwt from 'jwt-decode';
 
 import GroupIcon from '@material-ui/icons/Group';
 import DevicesIcon from '@material-ui/icons/DevicesOther';
 import HomeIcon from '@material-ui/icons/Home';
 
 import LoginPaper from '../LoginPaper'
+import fetch from 'node-fetch';
 
 const drawerWidth = 200;
 
@@ -59,13 +61,16 @@ class AppMenu extends React.Component {
       super(props);
       this.state = {
         anchorEl: null,
-        loggedId: '',
+        loggedRole: '',
+        token: '',
+        name: '',
       };
       this.handleClose = this.handleClose.bind(this)
   }
   
   componentDidMount(){
-    this.setState({loggedId: localStorage.getItem('loggedUserId')})
+
+    this.setState({token: localStorage.getItem('token') || '', loggedRole: localStorage.getItem('loggedRole') || '', name: localStorage.getItem('name') || ''})
   }
 
   handleClick = event => {
@@ -77,28 +82,95 @@ class AppMenu extends React.Component {
   };
 
   handleLogout = () => {
-    localStorage.setItem('loggedUserId', '');
-    this.setState({ anchorEl: null, loggedId: ''});
+    localStorage.setItem('token', '');
+    localStorage.setItem('loggedRole', '');
+    localStorage.setItem('name', '');
+
+    this.setState({ anchorEl: null, loggedRole: '', token: '', name: ''});
   };
 
-  
+  changeRole = (loggedRole, token) => {
+    console.log(loggedRole);
+    localStorage.setItem('token', token);
+    localStorage.setItem('loggedRole', loggedRole);
+    this.setState({loggedRole});
+  } 
 
   render(){
     const { classes } = this.props;
     const { anchorEl } = this.state;
 
     let menuList;
-
-    if (this.state.loggedId != ''){
+    
+    if (this.state.loggedRole != ''){
       menuList = <div>
-        <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+        <Link href='/profile'>
+          <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+        </Link>
         <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
       </div>
     } else {
       menuList = <div>
-        <LoginPaper onClick={this.handleClose}/>
+        <LoginPaper onClick={this.handleClose} changeRole={this.changeRole}/>
       </div>
     }
+
+    let Lista;
+    console.log(this.state.loggedRole);
+    if (this.state.loggedRole === 'admin') {
+      Lista = <div>
+                <Link href='/'>
+                  <ListItem button key={'home'}>
+                      <HomeIcon/>
+                      <ListItemText primary={'Home'} />
+                    </ListItem>
+                </Link>
+                <Link href='/equipments'>
+                  <ListItem button key={'Equipment'}>
+                      <DevicesIcon/>
+                      <ListItemText primary={'Equipment'} />
+                    </ListItem>
+                </Link>
+                <Link href='/users'>
+                  <ListItem button key={'Users'} >
+                    <GroupIcon/>
+                    <ListItemText primary={'Users'} />
+                  </ListItem>
+                </Link>
+                <Link href='/loans'>
+                  <ListItem button key={'Loans'}>
+                    <GroupIcon/>
+                    <ListItemText primary={'Loans'} />
+                  </ListItem>
+                </Link>
+            </div>
+    } else if (this.state.loggedRole === 'user') {
+      Lista = <div>
+              <Link href='/'>
+                <ListItem button key={'home'}>
+                    <HomeIcon/>
+                    <ListItemText primary={'Home'} />
+                  </ListItem>
+              </Link>
+              <Link href='/equipments'>
+                <ListItem button key={'Equipment'}>
+                    <DevicesIcon/>
+                    <ListItemText primary={'Equipment'} />
+                  </ListItem>
+              </Link>
+            </div>
+    } else {
+      Lista = <div>
+                <Link href='/'>
+                  <ListItem button key={'home'}>
+                      <HomeIcon/>
+                      <ListItemText primary={'Home'} />
+                    </ListItem>
+                </Link>
+            </div>
+    }
+
+    
 
     return (
       <div className={classes.root}>
@@ -109,6 +181,7 @@ class AppMenu extends React.Component {
               Varaus järjestelmä
             </Typography>
             <div className={classes.grow} />
+            {this.state.name}
             <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" aria-owns={anchorEl ? 'simple-menu' : null}
               aria-haspopup="true"
               onClick={this.handleClick}>
@@ -133,30 +206,7 @@ class AppMenu extends React.Component {
         >
           <div className={classes.toolbar} />
           <List>
-            <Link href='/'>
-              <ListItem button key={'home'}>
-                  <HomeIcon/>
-                  <ListItemText primary={'Home'} />
-                </ListItem>
-            </Link>
-            <Link href='/equipments'>
-              <ListItem button key={'Equipment'}>
-                  <DevicesIcon/>
-                  <ListItemText primary={'Equipment'} />
-                </ListItem>
-            </Link>
-            <Link href='/users'>
-              <ListItem button key={'Users'} >
-                <GroupIcon/>
-                <ListItemText primary={'Users'} />
-              </ListItem>
-            </Link>
-            <Link href='/loans'>
-              <ListItem button key={'Loans'}>
-                <GroupIcon/>
-                <ListItemText primary={'Loans'} />
-              </ListItem>
-            </Link>
+            {Lista}
           </List>
         </Drawer>
         <main className={classes.content}>

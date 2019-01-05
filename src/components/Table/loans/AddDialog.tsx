@@ -13,8 +13,6 @@ import AddIcon from '@material-ui/icons/AddCircleOutline';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import classNames from 'classnames';
 
-import auth from '../../../const';
-
 const styles = theme => ({
     root: {
       width: '100%',
@@ -51,7 +49,7 @@ class EditDialog extends React.Component {
       fetch('http://localhost:9000/api/v1/loansystem/devices', { 
         method: 'GET', 
         headers: new Headers({
-          'Authorization': auth, 
+          'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
           'Content-Type': 'application/json'
         })
       })
@@ -65,7 +63,7 @@ class EditDialog extends React.Component {
     fetch('http://localhost:9000/api/v1/loansystem/users', { 
       method: 'GET', 
       headers: new Headers({
-        'Authorization': auth, 
+        'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
         'Content-Type': 'application/json'
       })
     })
@@ -100,7 +98,7 @@ class EditDialog extends React.Component {
     fetch('http://localhost:9000/api/v1/loansystem/loans', { 
       method: 'POST', 
       headers: new Headers({
-        'Authorization': auth, 
+        'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
         'Content-Type': 'application/json'
       }),
       body: JSON.stringify(data)
