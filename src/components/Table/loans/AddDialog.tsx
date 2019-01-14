@@ -46,7 +46,7 @@ class EditDialog extends React.Component {
 
   handleClickOpen = () => {
 
-      fetch('http://0.0.0.0:9000/api/v1/loansystem/devices', { 
+      fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/devices', { 
         method: 'GET', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -60,7 +60,7 @@ class EditDialog extends React.Component {
         this.setState({devices});
       })
     
-    fetch('http://0.0.0.0:9000/api/v1/loansystem/users', { 
+    fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/users', { 
       method: 'GET', 
       headers: new Headers({
         'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -95,7 +95,7 @@ class EditDialog extends React.Component {
       loanReceiver_id: this.state.data.loanReceiver_id
     }
     console.log(data);
-    fetch('http://0.0.0.0:9000/api/v1/loansystem/loans', { 
+    fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/loans', { 
       method: 'POST', 
       headers: new Headers({
         'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 

@@ -56,7 +56,7 @@ class AddDialog extends React.Component {
         loantime: this.state.loantime,
       }
     //console.log(typeof data.loantime)
-    fetch('http://0.0.0.0:9000/api/v1/loansystem/devices', { 
+    fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/devices', { 
         method: 'POST', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 

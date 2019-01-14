@@ -5,5 +5,5 @@
 // const auth = `Bearer ${window.localStorage.getItem('token')}`;
 // export default auth
 
-const address = '0.0.0.0';
+const address = 'api.websyksy2018-30.course.tamk.cloud';
 export default  address
