@@ -47,7 +47,7 @@ class EditDialog extends React.Component {
 
   handleClickOpen = () => {
 
-    fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/loans/' + this.props.data.id, { 
+    fetch('http://localhost:9000/api/v1/loansystem/loans/' + this.props.data.id, { 
         method: 'GET', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -62,7 +62,7 @@ class EditDialog extends React.Component {
         data.returnTime = data.returnTime.slice(0,-1)
         this.setState({data})
       })
-      fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/devices', { 
+      fetch('http://localhost:9000/api/v1/loansystem/devices', { 
         method: 'GET', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -76,7 +76,7 @@ class EditDialog extends React.Component {
         this.setState({devices});
       })
     
-    fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/users', { 
+    fetch('http://localhost:9000/api/v1/loansystem/users', { 
       method: 'GET', 
       headers: new Headers({
         'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -121,7 +121,7 @@ class EditDialog extends React.Component {
     }
     body += `]`
     
-    fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/loans/' + this.state.data.id, { 
+    fetch('http://localhost:9000/api/v1/loansystem/loans/' + this.state.data.id, { 
         method: 'PATCH', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 

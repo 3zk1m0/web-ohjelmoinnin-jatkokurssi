@@ -212,7 +212,7 @@ class UserTable extends React.Component {
   };
 
   componentWillMount = () => {
-    fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/devices', { 
+    fetch('http://localhost:9000/api/v1/loansystem/devices', { 
       method: 'GET', 
       headers: new Headers({
         'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -302,7 +302,7 @@ class UserTable extends React.Component {
 
   handleDelete = (id) => {
     if (confirm("Are you sure to Delete") === true){
-      fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/devices/' + id, { 
+      fetch('http://localhost:9000/api/v1/loansystem/devices/' + id, { 
         method: 'DELETE', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -327,7 +327,7 @@ class UserTable extends React.Component {
     if (selected.length === data.length) {
       if (confirm("Are you sure to Delete All")) {
         selected.forEach(element => {
-          fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/devices/' + element, { 
+          fetch('http://localhost:9000/api/v1/loansystem/devices/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
             'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -341,7 +341,7 @@ class UserTable extends React.Component {
     } else {
       if (confirm("Are you sure to Delete selected")) {
         selected.forEach(element => {
-          fetch('http://api.websyksy2018-30.course.tamk.cloud:9000/api/v1/loansystem/devices/' + element, { 
+          fetch('http://localhost:9000/api/v1/loansystem/devices/' + element, { 
             method: 'DELETE', 
             headers: new Headers({
             'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
