@@ -70,7 +70,7 @@ class EditDialog extends React.Component {
     }
     
 
-    fetch('http://localhost:9000/api/v1/loansystem/users', { 
+    fetch('http://api.websyksy2018-30.course.tamk.cloud/api/v1/loansystem/users', { 
         method: 'POST', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 

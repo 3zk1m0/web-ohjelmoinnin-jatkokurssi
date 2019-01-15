@@ -54,7 +54,7 @@ class AlertDialogSlide extends React.Component {
       password: this.state.password
     }
 
-    fetch('http://localhost:9000/api/v1/login', { 
+    fetch('http://api.websyksy2018-30.course.tamk.cloud/api/v1/login', { 
       method: 'POST', 
       headers: new Headers({
         'Content-Type': 'application/json'

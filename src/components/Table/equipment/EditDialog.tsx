@@ -58,7 +58,7 @@ class EditDialog extends React.Component {
     }
     this.props.handleEdit(data);
 
-    fetch('http://localhost:9000/api/v1/loansystem/devices/' + data.id, { 
+    fetch('http://api.websyksy2018-30.course.tamk.cloud/api/v1/loansystem/devices/' + data.id, { 
         method: 'PATCH', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 

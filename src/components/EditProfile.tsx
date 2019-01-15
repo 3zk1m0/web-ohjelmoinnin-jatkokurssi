@@ -42,7 +42,7 @@ class EditDialog extends React.Component {
   };
 
 componentDidMount = () => {
-  fetch('http://localhost:9000/api/v1/loansystem/ownuser', { 
+  fetch('http://api.websyksy2018-30.course.tamk.cloud/api/v1/loansystem/ownuser', { 
     method: 'GET', 
     headers: new Headers({
       'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
@@ -65,7 +65,7 @@ componentDidMount = () => {
       password: this.state.password,
     }
 
-    fetch('http://localhost:9000/api/v1/loansystem/ownuser', { 
+    fetch('http://api.websyksy2018-30.course.tamk.cloud/api/v1/loansystem/ownuser', { 
         method: 'PATCH', 
         headers: new Headers({
           'Authorization': `Bearer ${window.localStorage.getItem('token')}`, 
